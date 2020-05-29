@@ -1,0 +1,54 @@
+{
+    "name": "cbtech-ltd/laravel-json-api-transformer",
+    "description": "A collection of tools to deliver API Responses inspired by JSON:API for Laravel.",
+    "keywords": [
+        "cbtech-ltd",
+        "laravel-json-api-transformer"
+    ],
+    "homepage": "https://github.com/cbtech-ltd/laravel-json-api-transformer",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Vanderlei Sbaraini Amancio",
+            "email": "vanderlei@cbtech.co.uk",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.4",
+        "illuminate/support": "^7.0",
+        "webmozart/assert": "^1.8.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^5.0",
+        "../../vendor/phpunit/phpunit": "^8.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "CbtechLtd\\JsonApiTransformer\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "CbtechLtd\\JsonApiTransformer\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "CbtechLtd\\JsonApiTransformer\\JsonApiTransformerServiceProvider"
+            ],
+            "aliases": {
+                "JsonApiTransformer": "CbtechLtd\\JsonApiTransformer\\JsonApiTransformerFacade"
+            }
+        }
+    }
+}
