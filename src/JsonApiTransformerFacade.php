@@ -2,10 +2,16 @@
 
 namespace CbtechLtd\JsonApiTransformer;
 
+use CbtechLtd\JsonApiTransformer\ApiResources\ApiResource;
+use CbtechLtd\JsonApiTransformer\ApiResources\ApiResourceCollection;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Facade;
 
 /**
  * @see \CbtechLtd\JsonApiTransformer\JsonApiTransformer
+ * @method static ApiResourceCollection collection(string $resourceTypeClass, Collection $items)
+ * @method static ApiResource single(string $resourceTypeClass, Model $model)
  */
 class JsonApiTransformerFacade extends Facade
 {
@@ -16,6 +22,6 @@ class JsonApiTransformerFacade extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return 'laravel-json-api-resources';
+        return 'json-api-transformer';
     }
 }

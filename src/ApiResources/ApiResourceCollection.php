@@ -32,7 +32,7 @@ class ApiResourceCollection extends ResourceCollection
             // TODO: Build the links object.
             'links' => [],
 
-            // TODO: Builde the meta object.
+            // TODO: Build the meta object.
             'meta'  => [],
         ];
     }

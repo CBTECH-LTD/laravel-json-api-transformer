@@ -4,6 +4,7 @@ namespace CbtechLtd\JsonApiTransformer\ApiResources;
 
 use CbtechLtd\JsonApiTransformer\Contracts\ResourceLinkContract;
 use CbtechLtd\JsonApiTransformer\Contracts\ResourceRelationshipContract;
+use CbtechLtd\JsonApiTransformer\JsonApiTransformerFacade;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -15,6 +16,7 @@ abstract class ResourceType
     protected ?Collection $relationships = null;
     protected ?Collection $links = null;
     protected ?Collection $meta = null;
+    protected ?Collection $collectionMeta = null;
 
     public function __construct(Model $model)
     {
@@ -39,12 +41,12 @@ abstract class ResourceType
 
     public static function single($model): ApiResource
     {
-        return app(ApiResourceBuilder::class)->single(static::class, $model);
+        return JsonApiTransformerFacade::single(static::class, $model);
     }
 
     public static function collection($models): ApiResourceCollection
     {
-        return app(ApiResourceBuilder::class)->collection(static::class, $models);
+        return JsonApiTransformerFacade::collection(static::class, $models);
     }
 
     /**
@@ -70,6 +72,11 @@ abstract class ResourceType
     public function getMeta(): Collection
     {
         return $this->meta ?: $this->buildMeta();
+    }
+
+    public function getCollectionMeta(): Collection
+    {
+        return $this->collectionMeta ?: $this->buildCollectionMeta();
     }
 
     /**
@@ -98,6 +105,11 @@ abstract class ResourceType
      * @return array
      */
     protected function meta(): array
+    {
+        return [];
+    }
+
+    protected function collectionMeta(): array
     {
         return [];
     }
@@ -142,5 +154,11 @@ abstract class ResourceType
     {
         $this->meta = Collection::make($this->meta());
         return $this->meta;
+    }
+
+    protected function buildCollectionMeta(): Collection
+    {
+        $this->collectionMeta = Collection::make($this->collectionMeta());
+        return $this->collectionMeta;
     }
 }

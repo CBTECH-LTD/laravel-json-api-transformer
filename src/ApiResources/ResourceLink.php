@@ -17,9 +17,9 @@ class ResourceLink implements ResourceLinkContract
         $this->route = $route;
     }
 
-    public static function make(...$parameters)
+    public static function make(string $name, array $route)
     {
-        return new static(...$parameters);
+        return new static($name, $route);
     }
 
     public function toArray()
