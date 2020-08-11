@@ -37,6 +37,11 @@ class ApiResourceCollection extends ResourceCollection
         ];
     }
 
+    public function getCollection(): Collection
+    {
+        return $this->collection;
+    }
+
     protected function getData($request): Collection
     {
         return $this->collection->map(

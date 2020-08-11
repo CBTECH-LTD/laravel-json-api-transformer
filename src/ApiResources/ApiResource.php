@@ -3,7 +3,9 @@
 namespace CbtechLtd\JsonApiTransformer\ApiResources;
 
 use CbtechLtd\JsonApiTransformer\Contracts\ResourceLinkContract;
+use CbtechLtd\JsonApiTransformer\Contracts\ResourceMetaContract;
 use CbtechLtd\JsonApiTransformer\Contracts\ResourceRelationshipContract;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Collection;
@@ -18,6 +20,11 @@ class ApiResource extends JsonResource
 {
     public static $wrap = null;
     protected $included = [];
+
+    public function getModel(): Model
+    {
+        return $this->resource->getModel();
+    }
 
     public function includes(...$relationshipsToInclude): self
     {
@@ -41,7 +48,7 @@ class ApiResource extends JsonResource
             'relationships' => $this->buildRelationships(),
             'links'         => $this->buildLinks(),
             'included'      => $this->buildIncluded($request),
-            'meta'          => $this->resource->getMeta(),
+            'meta'          => $this->buildMeta(),
         ];
     }
 
@@ -77,6 +84,13 @@ class ApiResource extends JsonResource
     {
         return $this->resource->getLinks()->mapWithKeys(
             fn(ResourceLinkContract $link) => $link->toArray()
+        );
+    }
+
+    protected function buildMeta(): Collection
+    {
+        return $this->resource->getMeta()->mapWithKeys(
+            fn(ResourceMetaContract $meta) => $meta->toArray()
         );
     }
 }

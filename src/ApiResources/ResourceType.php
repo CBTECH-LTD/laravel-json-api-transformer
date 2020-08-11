@@ -3,6 +3,7 @@
 namespace CbtechLtd\JsonApiTransformer\ApiResources;
 
 use CbtechLtd\JsonApiTransformer\Contracts\ResourceLinkContract;
+use CbtechLtd\JsonApiTransformer\Contracts\ResourceMetaContract;
 use CbtechLtd\JsonApiTransformer\Contracts\ResourceRelationshipContract;
 use CbtechLtd\JsonApiTransformer\JsonApiTransformerFacade;
 use Illuminate\Database\Eloquent\Model;
@@ -37,7 +38,10 @@ abstract class ResourceType
      * @param Request $request
      * @return array
      */
-    abstract public function attributes(Request $request): array;
+    public function attributes(Request $request): array
+    {
+        return $this->getAttributesFromModelFillable();
+    }
 
     public static function single($model): ApiResource
     {
@@ -77,6 +81,11 @@ abstract class ResourceType
     public function getCollectionMeta(): Collection
     {
         return $this->collectionMeta ?: $this->buildCollectionMeta();
+    }
+
+    public function getModel(): Model
+    {
+        return $this->model;
     }
 
     /**
@@ -152,7 +161,19 @@ abstract class ResourceType
 
     protected function buildMeta(): Collection
     {
-        $this->meta = Collection::make($this->meta());
+        $values = $this->meta();
+
+        Assert::allIsInstanceOf(
+            $values,
+            ResourceMetaContract::class,
+            'All meta must implement ' . ResourceMetaContract::class,
+        );
+
+        $this->meta = Collection::make($values)
+            ->mapWithKeys(
+                fn(ResourceMetaContract $meta) => [$meta->getName() => $meta],
+            );
+
         return $this->meta;
     }
 
@@ -160,5 +181,15 @@ abstract class ResourceType
     {
         $this->collectionMeta = Collection::make($this->collectionMeta());
         return $this->collectionMeta;
+    }
+
+    protected function getAttributesFromModelFillable(): array
+    {
+        $fields = $this->model->getFillable();
+
+        return Collection::make($fields)
+            ->mapWithKeys(
+                fn(string $field) => [$field => $this->model->{$field}]
+            )->all();
     }
 }

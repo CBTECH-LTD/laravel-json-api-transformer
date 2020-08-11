@@ -2,29 +2,49 @@
 
 namespace CbtechLtd\JsonApiTransformer\ApiResources;
 
-use Illuminate\Contracts\Support\Arrayable;
+use CbtechLtd\JsonApiTransformer\Contracts\ResourceMetaContract;
 
-class ResourceMeta implements Arrayable
+class ResourceMeta implements ResourceMetaContract
 {
-    protected array $data;
+    protected string $name;
+    protected $value;
+    protected bool $showCondition = true;
 
-    public function __construct(array $data = [])
+    public static function make(string $name, $value): self
     {
-        $this->data = $data;
+        return new static($name, $value);
     }
 
-    public function getData(): array
+    public function __construct(string $name, $value)
     {
-        return $this->data;
+        $this->value = $value;
+        $this->name = $name;
     }
 
-    public function setData(array $data): void
+    public function getName(): string
     {
-        $this->data = $data;
+        return $this->name;
+    }
+
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+    public function when(bool $condition): self
+    {
+        $this->showCondition = $condition;
+        return $this;
     }
 
     public function toArray()
     {
-        return $this->getData();
+        if (! $this->showCondition) {
+            return [];
+        }
+
+        return [
+            $this->getName() => $this->getValue(),
+        ];
     }
 }
