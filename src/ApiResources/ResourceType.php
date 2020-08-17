@@ -2,8 +2,8 @@
 
 namespace CbtechLtd\JsonApiTransformer\ApiResources;
 
-use CbtechLtd\JsonApiTransformer\Contracts\ResourceLinkContract;
-use CbtechLtd\JsonApiTransformer\Contracts\ResourceMetaContract;
+use CbtechLtd\JsonApiTransformer\ApiResources\Traits\WithLinks;
+use CbtechLtd\JsonApiTransformer\ApiResources\Traits\WithMeta;
 use CbtechLtd\JsonApiTransformer\Contracts\ResourceRelationshipContract;
 use CbtechLtd\JsonApiTransformer\JsonApiTransformerFacade;
 use Illuminate\Database\Eloquent\Model;
@@ -13,10 +13,10 @@ use Webmozart\Assert\Assert;
 
 abstract class ResourceType
 {
+    use WithMeta, WithLinks;
+
     protected Model $model;
     protected ?Collection $relationships = null;
-    protected ?Collection $links = null;
-    protected ?Collection $meta = null;
     protected ?Collection $collectionMeta = null;
 
     public function __construct(Model $model)
@@ -43,14 +43,14 @@ abstract class ResourceType
         return $this->getAttributesFromModelFillable();
     }
 
-    public static function single($model): ApiResource
+    public static function transformToSingle($model): ApiResource
     {
         return JsonApiTransformerFacade::single(static::class, $model);
     }
 
-    public static function collection($models): ApiResourceCollection
+    public static function transformToCollection($models): ApiResourceCollection
     {
-        return JsonApiTransformerFacade::collection(static::class, $models);
+        return JsonApiTransformerFacade::collectionFromModels(static::class, $models);
     }
 
     /**
@@ -66,16 +66,6 @@ abstract class ResourceType
     public function getRelationships(): Collection
     {
         return $this->relationships ?: $this->buildRelationships();
-    }
-
-    public function getLinks(): Collection
-    {
-        return $this->links ?: $this->buildLinks();
-    }
-
-    public function getMeta(): Collection
-    {
-        return $this->meta ?: $this->buildMeta();
     }
 
     public function getCollectionMeta(): Collection
@@ -94,26 +84,6 @@ abstract class ResourceType
      * @return array
      */
     protected function relationships(): array
-    {
-        return [];
-    }
-
-    /**
-     * Build an array with all resource links.
-     *
-     * @return array
-     */
-    protected function links(): array
-    {
-        return [];
-    }
-
-    /**
-     * Build an array with metadata related to the resource.
-     *
-     * @return array
-     */
-    protected function meta(): array
     {
         return [];
     }
@@ -139,42 +109,6 @@ abstract class ResourceType
             );
 
         return $this->relationships;
-    }
-
-    protected function buildLinks(): Collection
-    {
-        $values = $this->links();
-
-        Assert::allIsInstanceOf(
-            $values,
-            ResourceLinkContract::class,
-            'All links must implement ' . ResourceLinkContract::class
-        );
-
-        $this->links = Collection::make($values)
-            ->mapWithKeys(
-                fn(ResourceLinkContract $link) => [$link->getName() => $link]
-            );
-
-        return $this->links;
-    }
-
-    protected function buildMeta(): Collection
-    {
-        $values = $this->meta();
-
-        Assert::allIsInstanceOf(
-            $values,
-            ResourceMetaContract::class,
-            'All meta must implement ' . ResourceMetaContract::class,
-        );
-
-        $this->meta = Collection::make($values)
-            ->mapWithKeys(
-                fn(ResourceMetaContract $meta) => [$meta->getName() => $meta],
-            );
-
-        return $this->meta;
     }
 
     protected function buildCollectionMeta(): Collection

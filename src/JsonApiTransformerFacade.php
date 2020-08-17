@@ -10,7 +10,8 @@ use Illuminate\Support\Facades\Facade;
 
 /**
  * @see \CbtechLtd\JsonApiTransformer\JsonApiTransformer
- * @method static ApiResourceCollection collection(string $resourceTypeClass, Collection $items)
+ * @method static ApiResourceCollection collection(Collection $items)
+ * @method static ApiResourceCollection collectionFromModels(string $resourceTypeClass, Collection $items)
  * @method static ApiResource single(string $resourceTypeClass, Model $model)
  */
 class JsonApiTransformerFacade extends Facade

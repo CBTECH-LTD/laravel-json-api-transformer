@@ -11,7 +11,12 @@ use Webmozart\Assert\Assert;
 
 class JsonApiTransformer
 {
-    public function collection(string $resourceTypeClass, Collection $items): ApiResourceCollection
+    public function collection(Collection $items): ApiResourceCollection
+    {
+        return ApiResourceCollection::make($items);
+    }
+
+    public function collectionFromModels(string $resourceTypeClass, Collection $models): ApiResourceCollection
     {
         Assert::isAOf(
             $resourceTypeClass,
@@ -19,7 +24,9 @@ class JsonApiTransformer
             'First parameter must be a ' . ResourceType::class
         );
 
-        return ApiResourceCollection::make($resourceTypeClass, $items);
+        $items = $models->map(fn(Model $model) => new $resourceTypeClass($model));
+
+        return $this->collection($items);
     }
 
     public function single(string $resourceTypeClass, Model $model): ApiResource
