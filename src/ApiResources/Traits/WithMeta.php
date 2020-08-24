@@ -19,7 +19,7 @@ trait WithMeta
             'All items must implement ' . ResourceMetaContract::class,
         );
 
-        $this->additionalMeta = $meta;
+        $this->additionalMeta = array_merge($this->additionalMeta, $meta);
         return $this;
     }
 
