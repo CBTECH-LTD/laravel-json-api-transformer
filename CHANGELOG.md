@@ -2,6 +2,13 @@
 
 All notable changes to `laravel-json-api-transformer` will be documented in this file
 
+## 0.2.1 - 2020-08-24
+
+### Fixed
+- WithMeta and WithLinks should merge with previously added data.
+
+---
+
 ## 0.2.0 - 2020-08-11
 
 ### Added

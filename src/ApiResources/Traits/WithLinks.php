@@ -19,7 +19,7 @@ trait WithLinks
             'All items must implement ' . ResourceLinkContract::class,
         );
 
-        $this->additionalLinks = $links;
+        $this->additionalLinks = array_merge($this->additionalLinks, $links);
         return $this;
     }
 
